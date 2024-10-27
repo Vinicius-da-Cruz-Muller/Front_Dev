@@ -15,7 +15,7 @@ const Task = ({ task, provided }: TaskProps) => {
 			ref={provided.innerRef}
 			{...provided.draggableProps}
 			{...provided.dragHandleProps}
-			className="w-full cursor-grab bg-[#fff] flex flex-col justify-between gap-3 items-start shadow-sm rounded-xl px-3 py-4"
+			className="w-full cursor-grab bg-[#fff] flex flex-col mr-3 justify-between gap-3 items-start shadow-sm rounded-xl px-3 py-4"
 		>
 			{image && alt && (
 				<img

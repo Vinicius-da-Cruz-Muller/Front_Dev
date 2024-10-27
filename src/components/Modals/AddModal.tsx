@@ -13,7 +13,7 @@ interface AddModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	handleAddTask: (taskData: any) => void;
+	handleAddTask?: (taskData: any) => void;
 }
 
 const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) => {
@@ -66,7 +66,7 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 	};
 
 	const handleSubmit = () => {
-		handleAddTask(taskData);
+		handleAddTask && handleAddTask(taskData);
 		closeModal();
 	};
 
