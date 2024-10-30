@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
 	AppsOutline,
 	GridOutline,
@@ -7,7 +8,7 @@ import {
 	NotificationsOutline,
 	PeopleOutline,
 	PieChartOutline,
-} from "react-ionicons"; 
+} from "react-ionicons";
 
 const Sidebar = () => {
 	const navLinks = [
@@ -23,7 +24,7 @@ const Sidebar = () => {
 			active: false,
 		},
 		{
-			title: "Boards",
+			title: "Categorias",
 			icon: (
 				<AppsOutline
 					color="#555"
@@ -32,6 +33,14 @@ const Sidebar = () => {
 				/>
 			),
 			active: true,
+			childrens: [
+				{
+					title: "Padrão",
+				},
+				{
+					title: "Personalizado",
+				},
+			]
 		},
 		{
 			title: "Projects",
@@ -89,6 +98,15 @@ const Sidebar = () => {
 			active: false,
 		},
 	];
+
+	const [selected, setSelected] = useState("Categorias");
+	const [selectedChild, setSelectedChild] = useState("Padrão");
+
+	const handleClick = (title: string) => {
+		setSelected(selected === title ? "" : title);
+	};
+
+
 	return (
 		<div className="fixed left-0 top-0 md:w-[230px] w-[60px] overflow-hidden h-full flex flex-col">
 			<div className="w-full flex items-center md:justify-start justify-center md:pl-5 h-[70px] bg-[#fff]">
@@ -98,14 +116,35 @@ const Sidebar = () => {
 			<div className="w-full h-[calc(100vh-70px)] border-r flex flex-col md:items-start items-center gap-2 border-slate-300 bg-[#fff] py-5 md:px-3 px-3 relative">
 				{navLinks.map((link) => {
 					return (
-						<div
-							key={link.title}
-							className={`flex items-center gap-2 w-full rounded-lg hover:bg-orange-300 px-2 py-3 cursor-pointer ${
-								link.active ? "bg-orange-300" : "bg-transparent"
-							}`}
-						>
-							{link.icon}
-							<span className="font-medium text-[15px] md:block hidden">{link.title}</span>
+						<div className="flex flex-col w-full justify-end"> 
+							<div
+								key={link.title}
+								className={`flex items-center gap-2 w-full rounded-lg hover:bg-orange-300 px-2 py-3 cursor-pointer flex-col ${link.title == selected ? "bg-orange-300" : "bg-transparent"
+									}`}
+								onClick={() => handleClick(link.title)}
+							>
+								<div className="flex justify-between w-full px-8">
+									{link.icon}
+									<span className="font-medium text-[15px] md:block hidden">{link.title}</span>
+								</div>
+
+							</div>
+							{
+								link.title === selected && link.childrens && (
+									<div className="flex flex-col items-end gap-2 mt-2 w-full">
+										{link.childrens.map((child) => (
+											<div
+												key={child.title}
+												className={`flex items-center justify-center gap-2 w-full rounded-lg hover:bg-orange-300 px-2 py-3 cursor-pointer ${child.title == selectedChild ? "bg-orange-300" : "bg-transparent"}`} 
+												onClick={() => setSelectedChild(child.title)}
+											>
+												<span className="font-medium text-[15px] md:block hidden">{child.title}</span>
+											</div>
+										))}
+									</div>
+								)
+							}
+
 						</div>
 					);
 				})}
