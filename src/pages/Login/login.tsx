@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { login } from "../../api/services/userService";
 import TextInput from "../../components/TextInput/textInput";
 
 //Essa página de login segue um sistema de grid de 12 colunas para desktop, 6 colunas para tablet e 2 colunas para mobile.
@@ -24,10 +25,16 @@ const Login = () => {
             alert("Senha inválida")
             return;
         }
-        //enviar dados para backend tratar
+        const formData = new FormData();
+        formData.set("email", email)
+        formData.set("senha", senha)
+        login(formData).then((response : any)=>{
+            if(response){
+                alert("Login feito com sucesso");
+                navigate('/')
 
-        alert("Logado com sucesso");
-        navigate('/')
+            }
+        })
     }
     return (
         <>

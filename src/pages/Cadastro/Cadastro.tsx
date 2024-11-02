@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { login, register } from "../../api/services/userService";
 import TextInput from "../../components/TextInput/textInput";
 const Cadastro = ()=>{
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmar, setConfirmar] = useState('');
-    const [nome, setNome] = useState('');
     const navigate = useNavigate();
 
     const handleForm = (event: React.FormEvent<HTMLFormElement>)=>{
@@ -23,18 +23,22 @@ const Cadastro = ()=>{
             alert("Confirmar a senha está diferente da senha");
             return;
         }
+        const formData = new FormData();
+        formData.set("email", email)
+        formData.set("senha", senha)
+        register(formData).then((response : any)=>{
+            if(response){
+                alert("Cadastrado com sucesso");
+                navigate('/')
 
-        //enviar dados para backend tratar
+            }
+        })
 
-        alert("Cadastrado com sucesso");
-        navigate('/')
     }
     return (<>
         <div className="grid grid-cols-mobile gap-x-24 w-full h-full justify-center tablet:grid-cols-tablets tablet:gap-x-12 lg:grid-cols-desktop lg:gap-x-8 ">
                 <form onSubmit={handleForm} className=" bg-white rounded-lg p-5 grid col-span-2 w-full justify-self-center h-full gap-4 tablet:w-3/5 tablet:col-span-full lg:col-span-full lg:w-1/3 mt-12 lg:gap-4">
                     <h2 className="text-2xl font-bold text-center">Faça Cadastro</h2>
-                    <TextInput idInput="nome" label="Digite seu nome completo:" typeInput="text" name="nome" placeholder="nome:" className="flex flex-col gap-2" value={nome} // O valor é controlado pelo state
-                            textChanged={(e) => setNome(e)} />
                     <TextInput idInput="email" label="Digite seu email:" typeInput="text" name="email" placeholder="Email:" className="flex flex-col gap-2" value={email} // O valor é controlado pelo state
                             textChanged={(e) => setEmail(e)} />
                     <TextInput idInput="senha" label="Digite sua senha:" typeInput="text" name="senha" placeholder="Senha:" className="flex flex-col gap-2" value={senha}
