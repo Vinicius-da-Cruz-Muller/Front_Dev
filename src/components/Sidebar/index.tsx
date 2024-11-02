@@ -119,12 +119,12 @@ const Sidebar = () => {
 						<div className="flex flex-col w-full justify-end"> 
 							<div
 								key={link.title}
-								className={`flex items-center gap-2 w-full rounded-lg hover:bg-orange-300 px-2 py-3 cursor-pointer flex-col ${link.title == selected ? "bg-orange-300" : "bg-transparent"
+								className={`flex flex-row items-center w-full rounded-lg py-1 cursor-pointer
 									}`}
 								onClick={() => handleClick(link.title)}
 							>
-								<div className="flex justify-between w-full px-8">
-									{link.icon}
+								<div className="flex justify-between items-center w-full px-6 group">
+									<div className={`group-hover:bg-orange-300 p-3 rounded-lg ${selected == link.title ? "bg-orange-300" : ""}`}>{link.icon}</div>
 									<span className="font-medium text-[15px] md:block hidden">{link.title}</span>
 								</div>
 
@@ -135,10 +135,13 @@ const Sidebar = () => {
 										{link.childrens.map((child) => (
 											<div
 												key={child.title}
-												className={`flex items-center justify-center gap-2 w-full rounded-lg hover:bg-orange-300 px-2 py-3 cursor-pointer ${child.title == selectedChild ? "bg-orange-300" : "bg-transparent"}`} 
+												className={`flex flex-row items-center group w-[70%] justify-start gap-2 rounded-lg px-2 py-3 cursor-pointer `} 
 												onClick={() => setSelectedChild(child.title)}
 											>
-												<span className="font-medium text-[15px] md:block hidden">{child.title}</span>
+												<div className={`w-5 h-10 rounded-s-lg group-hover:bg-orange-300 ${child.title == selectedChild ? "bg-orange-300" : "bg-transparent"}`}>
+
+												</div>
+												<span className="font-medium text-[15px] md:block hidden text-sm">{child.title}</span>
 											</div>
 										))}
 									</div>
