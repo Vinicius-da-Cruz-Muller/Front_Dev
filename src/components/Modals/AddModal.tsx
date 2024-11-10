@@ -20,9 +20,11 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 	const initialTaskData = {
 		id: uuidv4(),
 		title: "",
-		description: "",
-		priority: "",
-		deadline: 0,
+		link: "",
+		excerpt: "",
+		// description: "",
+		// priority: "",
+		// deadline: 0,
 		image: "",
 		alt: "",
 		tags: [] as Tag[],
@@ -86,18 +88,26 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 					name="title"
 					value={taskData.title}
 					onChange={handleChange}
-					placeholder="Title"
+					placeholder="Título"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
 				/>
 				<input
 					type="text"
-					name="description"
-					value={taskData.description}
+					name="link"
+					value={taskData.link}
 					onChange={handleChange}
-					placeholder="Description"
+					placeholder="Link"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
 				/>
-				<select
+				<input
+					type="text"
+					name="excerpt"
+					value={taskData.excerpt}
+					onChange={handleChange}
+					placeholder="Trecho"
+					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
+				/>
+				{/* <select
 					name="priority"
 					onChange={handleChange}
 					value={taskData.priority}
@@ -107,27 +117,27 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 					<option value="low">Low</option>
 					<option value="medium">Medium</option>
 					<option value="high">High</option>
-				</select>
-				<input
+				</select> */}
+				{/* <input
 					type="number"
 					name="deadline"
 					value={taskData.deadline}
 					onChange={handleChange}
 					placeholder="Deadline"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm"
-				/>
+				/> */}
 				<input
 					type="text"
 					value={tagTitle}
 					onChange={(e) => setTagTitle(e.target.value)}
-					placeholder="Tag Title"
+					placeholder="Nome da Tag"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm"
 				/>
 				<button
 					className="w-full rounded-md h-9 bg-slate-500 text-amber-50 font-medium"
 					onClick={handleAddTag}
 				>
-					Add Tag
+					Adicionar Tag
 				</button>
 				<div className="w-full">
 					{taskData.tags && <span>Tags:</span>}
@@ -158,10 +168,10 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 					/>
 				</div>
 				<button
-					className="w-full mt-3 rounded-md h-9 bg-orange-400 text-blue-50 font-medium"
+					className="w-full mt-3 rounded-md h-9 bg-green-400 text-blue-50 font-medium"
 					onClick={handleSubmit}
 				>
-					Submit Task
+					Adicionar Favorito
 				</button>
 			</div>
 		</div>

@@ -55,7 +55,7 @@ const Login = () => {
                             textChanged={(e) => setEmail(e)} />
                     <TextInput idInput="senha" label="Digite sua senha:" typeInput="text" name="senha" placeholder="Senha:" className="flex flex-col gap-2" value={senha}
                     textChanged={(e)=>setSenha(e)}/>
-                    <input type="submit" value="Confirmar" className="bg-orange-400 h-12 rounded-lg cursor-pointer"/>
+                    <input type="submit" value="Confirmar" className="bg-green-400 h-12 rounded-lg cursor-pointer"/>
                 </form>
             </div>
         </>

@@ -72,7 +72,7 @@ const Home = () => {
 								className="flex cursor-pointer items-center justify-center gap-1 py-[10px] md:w-[90%] w-full opacity-90 bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px]"
 							>
 								<AddOutline color={"#555"} />
-								Add Task
+								Adicionar Favorito
 							</div>
 						</div>
 					))}

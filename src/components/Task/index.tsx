@@ -8,7 +8,7 @@ interface TaskProps {
 }
 
 const Task = ({ task, provided }: TaskProps) => {
-	const { title, description, priority, deadline, image, alt, tags } = task;
+	const { title, link, excerpt, image, alt, tags } = task;
 
 	return (
 		<div
@@ -37,7 +37,8 @@ const Task = ({ task, provided }: TaskProps) => {
 			</div>
 			<div className="w-full flex items-start flex-col gap-0">
 				<span className="text-[15.5px] font-medium text-[#555]">{title}</span>
-				<span className="text-[13.5px] text-gray-500">{description}</span>
+				<span className="text-[13.5px] text-gray-500">{link}</span>
+				<span className="text-[13.5px] text-gray-500">{excerpt}</span>
 			</div>
 			<div className="w-full border border-dashed"></div>
 			<div className="w-full flex items-center justify-between">
@@ -47,9 +48,9 @@ const Task = ({ task, provided }: TaskProps) => {
 						width="19px"
 						height="19px"
 					/>
-					<span className="text-[13px] text-gray-700">{deadline} mins</span>
+					{/* <span className="text-[13px] text-gray-700">{deadline} mins</span> */}
 				</div>
-				<div
+				{/* <div
 					className={`w-[60px] rounded-full h-[5px] ${
 						priority === "high"
 							? "bg-red-500"
@@ -57,7 +58,7 @@ const Task = ({ task, provided }: TaskProps) => {
 							? "bg-orange-500"
 							: "bg-blue-500"
 					}`}
-				></div>
+				></div> */}
 			</div>
 		</div>
 	);
