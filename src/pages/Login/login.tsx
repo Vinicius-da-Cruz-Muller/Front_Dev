@@ -36,6 +36,9 @@ const Login = () => {
             }
         })
     }
+    const redirect = ()=>{
+        navigate('/Cadastro')
+    }
     return (
         <>
             {/* grid define para todos os filhos da div que será um grid,
@@ -55,6 +58,7 @@ const Login = () => {
                             textChanged={(e) => setEmail(e)} />
                     <TextInput idInput="senha" label="Digite sua senha:" typeInput="text" name="senha" placeholder="Senha:" className="flex flex-col gap-2" value={senha}
                     textChanged={(e)=>setSenha(e)}/>
+                    <p>Não tem login? <a onClick={redirect} className="text-cyan-500 cursor-pointer">Cadastre-se aqui</a></p>
                     <input type="submit" value="Confirmar" className="bg-orange-400 h-12 rounded-lg cursor-pointer"/>
                 </form>
             </div>
