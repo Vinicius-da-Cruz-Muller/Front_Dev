@@ -12,15 +12,15 @@ const Navbar = () => {
 		<div className="md:w-[calc(100%-230px)] w-[calc(100%-60px)] fixed flex items-center justify-between pl-2 pr-6 h-[70px] top-0 md:left-[230px] left-[60px] border-b border-slate-300 bg-[#fff]">
 			<div className="flex items-center gap-3 cursor-pointer">
 				<PersonCircle
-					color="#fb923c"
+					color="#4ade80"
 					width={"28px"}
 					height={"28px"}
 				/>
-				<span className="text-orange-400 font-semibold md:text-lg text-sm whitespace-nowrap">
-					Board Name
+				<span className="text-green-400 font-semibold md:text-lg text-sm whitespace-nowrap">
+					Board Padrão
 				</span>
 				<ChevronDown
-					color="#fb923c"
+					color="#4ade80"
 					width={"16px"}
 					height={"16px"}
 				/>
@@ -29,7 +29,7 @@ const Navbar = () => {
 				<SearchOutline color={"#999"} />
 				<input
 					type="text"
-					placeholder="Search"
+					placeholder="Pesquisar"
 					className="w-full bg-gray-100 outline-none text-[15px]"
 				/>
 			</div>
