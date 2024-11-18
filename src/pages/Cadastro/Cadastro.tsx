@@ -48,8 +48,8 @@ const Cadastro = ()=>{
                     textChanged={(e)=>setSenha(e)}/>
                     <TextInput idInput="confirmarSenha" label="Confirme sua senha:" typeInput="text" name="confirmarSenha" placeholder="Senha:" className="flex flex-col gap-2" value={confirmar}
                     textChanged={(e)=>setConfirmar(e)}/>
-                    <p>Não tem cadastro? <a onClick={redirect} className="text-cyan-500 cursor-pointer">Faça login</a></p>
-                    <input type="submit" value="Confirmar" className="bg-orange-400 h-12 rounded-lg cursor-pointer"/>
+                    <p>Já tem cadastro? <a onClick={redirect} className="text-cyan-500 cursor-pointer">Faça login</a></p>
+                    <input type="submit" value="Confirmar" className="bg-green-400 h-12 rounded-lg cursor-pointer"/>
                 </form>
             </div>
     </>)
