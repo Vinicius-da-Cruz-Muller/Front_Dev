@@ -1,44 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Dispatch, SetStateAction, useState } from "react";
 import { TimeOutline } from "react-ionicons";
-import { TaskT } from "../../types";
+import FavModal from "../Modals/FavModal";
 
 interface TaskProps {
-	task: TaskT;
-	provided: any;
+	favorite: any;
+	setAtt: Dispatch<SetStateAction<number>>;
 }
 
-const Task = ({ task, provided }: TaskProps) => {
-	const { title, link, excerpt, image, alt, tags } = task;
+const Task = ({ favorite, setAtt }: TaskProps) => {
+
+	const [modalOpen, setModalOpen] = useState(false);
 
 	return (
+		<>
 		<div
-			ref={provided.innerRef}
-			{...provided.draggableProps}
-			{...provided.dragHandleProps}
-			className="w-full cursor-grab bg-[#fff] flex flex-col mr-3 justify-between gap-3 items-start shadow-sm rounded-xl px-3 py-4"
+			className="w-full bg-[#fff] flex flex-col mr-3 justify-between gap-3 items-start shadow-sm rounded-xl px-3 py-4"
+			onClick={() => setModalOpen(true)}
 		>
-			{image && alt && (
+			{favorite.url_image && (
 				<img
-					src={image}
-					alt={alt}
+					src={favorite.url_image}
+					alt={"uma imagem"}
 					className="w-full h-[170px] rounded-lg"
 				/>
 			)}
-			<div className="flex items-center gap-2">
-				{tags.map((tag) => (
+			<div className="flex overflow-hidden w-full items-center gap-2">
+				{favorite.tags.map((tag: any) => (
 					<span
-						key={tag.title}
-						className="px-[10px] py-[2px] text-[13px] font-medium rounded-md"
-						style={{ backgroundColor: tag.bg, color: tag.text }}
+						key={tag.tag_id}
+						className="px-[10px] py-[2px] text-[13px] whitespace-nowrap font-medium rounded-md bg-green-300"
 					>
-						{tag.title}
+						{tag.tag_name}
 					</span>
 				))}
 			</div>
 			<div className="w-full flex items-start flex-col gap-0">
-				<span className="text-[15.5px] font-medium text-[#555]">{title}</span>
-				<span className="text-[13.5px] text-gray-500">{link}</span>
-				<span className="text-[13.5px] text-gray-500">{excerpt}</span>
+				<p className="text-sm w-full text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap">{favorite.url}</p>
+				<p className="text-sm w-full text-gray-500 mt-2 overflow-hidden text-ellipsis text-nowrap">"{favorite.excerpts[0]?.excerpt_text}"</p>
 			</div>
 			<div className="w-full border border-dashed"></div>
 			<div className="w-full flex items-center justify-between">
@@ -61,6 +60,14 @@ const Task = ({ task, provided }: TaskProps) => {
 				></div> */}
 			</div>
 		</div>
+		
+		{
+			modalOpen && (
+				<FavModal isOpen={modalOpen} closeModal={()=> setModalOpen(false)} favorite={favorite} setAdd={setAtt}/>
+			)
+		}
+		
+		</>
 	);
 };
 

@@ -1,37 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { getRandomColors } from "../../helpers/getRandomColors";
-import { v4 as uuidv4 } from "uuid";
+import { createFavorite, createTag, createTagToFavorite, createTrecho, deleteTag, updateFavorite, updateTrecho } from "../../api/services/favoritesService";
 
 interface Tag {
-	title: string;
-	bg: string;
-	text: string;
+	tag_id?: number;
+	tag_name: string;
 }
 
 interface AddModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	handleAddTask?: (taskData: any) => void;
+	categoryId: number;
+	setAtt: React.Dispatch<React.SetStateAction<number>>;
+	edit?: boolean
+	favorite?: any
 }
 
-const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) => {
+const AddModal = ({ isOpen, onClose, setOpen, categoryId, setAtt, edit, favorite }: AddModalProps) => {
+
+	const userID = 1
+
 	const initialTaskData = {
-		id: uuidv4(),
-		title: "",
-		link: "",
-		excerpt: "",
-		// description: "",
-		// priority: "",
-		// deadline: 0,
-		image: "",
-		alt: "",
-		tags: [] as Tag[],
+		favoriteId: null,
+		urlContent: edit ? favorite?.url : "",
+		urlImage: edit ? favorite?.url_image : "",
+		usuId: userID,
+		categoryId: edit ? favorite?.category.category_id : categoryId,
 	};
 
 	const [taskData, setTaskData] = useState(initialTaskData);
 	const [tagTitle, setTagTitle] = useState("");
+	const [excerpt, setExcerpt] = useState(edit ? favorite?.excerpts[0]?.excerpt_text : "");
+	const [tags, setTags] = useState<Tag[]>(edit ? favorite?.tags : []);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -40,43 +41,57 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 		setTaskData({ ...taskData, [name]: value });
 	};
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			const reader = new FileReader();
-			reader.onload = function (e) {
-				if (e.target) {
-					setTaskData({ ...taskData, image: e.target.result as string });
-				}
-			};
-			reader.readAsDataURL(e.target.files[0]);
-		}
-	};
-
-	const handleAddTag = () => {
-		if (tagTitle.trim() !== "") {
-			const { bg, text } = getRandomColors();
-			const newTag: Tag = { title: tagTitle.trim(), bg, text };
-			setTaskData({ ...taskData, tags: [...taskData.tags, newTag] });
-			setTagTitle("");
-		}
-	};
-
 	const closeModal = () => {
 		setOpen(false);
 		onClose();
 		setTaskData(initialTaskData);
 	};
 
-	const handleSubmit = () => {
-		handleAddTask && handleAddTask(taskData);
+	const handleSubmit = async () => {
+		let favId = null
+		if(edit){
+			favId = favorite.favorite_id
+			taskData["favoriteId"] = favorite.favorite_id
+			await updateFavorite(taskData)
+			await updateTrecho({ ExcerptContent: excerpt, idExcerpt: favorite.excerpts[0].excerpt_id });
+			favorite?.tags.forEach(async (tag: any) => {
+				await deleteTag(tag.tag_id);
+			})
+		}else{
+			const data = await createFavorite(taskData)
+			favId = data.favorite_id
+			await createTrecho({ ExcerptContent: excerpt, idFavorito: data.favorite_id });
+		}
+		
+		tags.forEach(async (tag) => {
+			const resp = await createTag({ tagName: tag.tag_name, tagIdUser: userID });
+			await createTagToFavorite(resp.tag_id, favId);
+		});
+
+		setExcerpt("");
+		setTags([]);
+
 		closeModal();
+
+		setTimeout(() => {
+			setAtt((att) => att + 1);
+		}, 400);
 	};
+
+	const tirarTag = (tagName: string) => {
+		const newTags = tags.filter((tag) => tagName !== tag.tag_name);
+		setTags(newTags);
+	}
+
+	const handleAddTag = () => {
+		setTags([...tags, { tag_name: tagTitle }]);
+		setTagTitle("");
+	}
 
 	return (
 		<div
-			className={`w-screen h-screen place-items-center fixed top-0 left-0 ${
-				isOpen ? "grid" : "hidden"
-			}`}
+			className={`w-screen h-screen place-items-center fixed top-0 left-0 ${isOpen ? "grid" : "hidden"
+				}`}
 		>
 			<div
 				className="w-full h-full bg-black opacity-70 absolute left-0 top-0 z-20"
@@ -85,16 +100,8 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 			<div className="md:w-[30vw] w-[90%] bg-white rounded-lg shadow-md z-50 flex flex-col items-center gap-3 px-5 py-6">
 				<input
 					type="text"
-					name="title"
-					value={taskData.title}
-					onChange={handleChange}
-					placeholder="Título"
-					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
-				/>
-				<input
-					type="text"
-					name="link"
-					value={taskData.link}
+					name="urlContent"
+					value={taskData.urlContent}
 					onChange={handleChange}
 					placeholder="Link"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
@@ -102,9 +109,17 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 				<input
 					type="text"
 					name="excerpt"
-					value={taskData.excerpt}
-					onChange={handleChange}
+					value={excerpt}
+					onChange={(e) => setExcerpt(e.target.value)}
 					placeholder="Trecho"
+					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
+				/>
+				<input
+					type="text"
+					name="urlImage"
+					value={taskData.urlImage}
+					onChange={handleChange}
+					placeholder="Caminho da imagem"
 					className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
 				/>
 				{/* <select
@@ -140,38 +155,22 @@ const AddModal = ({ isOpen, onClose, setOpen, handleAddTask }: AddModalProps) =>
 					Adicionar Tag
 				</button>
 				<div className="w-full">
-					{taskData.tags && <span>Tags:</span>}
-					{taskData.tags.map((tag, index) => (
+					{tags && <span>Tags:</span>}
+					{tags.map((tag, index) => (
 						<div
 							key={index}
-							className="inline-block mx-1 px-[10px] py-[2px] text-[13px] font-medium rounded-md"
-							style={{ backgroundColor: tag.bg, color: tag.text }}
+							className="inline-block mx-1 px-[10px] py-[2px] text-[13px] font-medium rounded-md bg-green-300"
 						>
-							{tag.title}
+							{tag.tag_name}
+							<label className="ml-2 cursor-pointer" onClick={()=>tirarTag(tag.tag_name)}>X</label>
 						</div>
 					))}
-				</div>
-				<div className="w-full flex items-center gap-4 justify-between">
-					<input
-						type="text"
-						name="alt"
-						value={taskData.alt}
-						onChange={handleChange}
-						placeholder="Image Alt"
-						className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm"
-					/>
-					<input
-						type="file"
-						name="image"
-						onChange={handleImageChange}
-						className="w-full"
-					/>
 				</div>
 				<button
 					className="w-full mt-3 rounded-md h-9 bg-green-400 text-blue-50 font-medium"
 					onClick={handleSubmit}
 				>
-					Adicionar Favorito
+					{edit ? "Editar" : "Adicionar"} Favorito
 				</button>
 			</div>
 		</div>

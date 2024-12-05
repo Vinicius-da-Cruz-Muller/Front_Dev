@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { login } from "../../api/services/userService";
+import { getUserId, login } from "../../api/services/userService";
 import TextInput from "../../components/TextInput/textInput";
+import { addToken } from "../../api/api";
 
 //Essa página de login segue um sistema de grid de 12 colunas para desktop, 6 colunas para tablet e 2 colunas para mobile.
 //O padrão de desenvolvimento é mobile first, ou seja, começa estilizando e fazendo tudo primeiro para mobile, depois vai responsivando para as demais dimensões
@@ -11,30 +12,43 @@ import TextInput from "../../components/TextInput/textInput";
 const Login = () => {
     const [email, setEmail] = useState('');//No input é atribuido esse estado de variável, onde toda vez que for digitado chamará a função set que atualizará o valor do estado
     const [senha, setSenha] = useState('');
+    const [userId, setUserId] = useState(0);
+
+
+    useEffect(() => {
+        if(userId){
+            console.log(userId);
+            localStorage.setItem("user_id",userId.toString());
+            navigate('/categorias');
+        }
+    }  ,[userId])
+
     const navigate = useNavigate();
     //quando o botão for clicado chamará essa função do onSubmit passando esse parâmetro automaticamente com essa tipagem estranha, mas dai é só transformar em formData que fica tudo de boa
-    const handleForm = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {//validando email
-            alert("Email inválido")
-            return;
-        }
 
         if(senha.length<6){//Faça sua regra de negócio aqui
             alert("Senha inválida")
             return;
         }
-        const formData = new FormData();
-        formData.set("email", email)
-        formData.set("senha", senha)
-        login(formData).then((response : any)=>{
+        
+        try{
+            const response = await login({
+                login: email,
+                password: senha
+            });
+    
             if(response){
                 alert("Login feito com sucesso");
-                navigate('/')
-
+                addToken(response.token)
+                const data = await getUserId(email);
+                console.log(data);
+                setUserId(data.user_id);
             }
-        })
+        }catch(err){
+            alert("Usuario não encontrado");
+        }
     }
     const redirect = ()=>{
         navigate('/Cadastro')

@@ -1,92 +1,133 @@
+import { useEffect, useState } from "react";
+import AddOutline from "react-ionicons/lib/AddOutline";
+import { useNavigate } from "react-router";
+import { createCategory, getCategories } from "../../api/services/categoryService";
+
+export interface Category {
+	category_id: string;
+	category_name: string;
+
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useState } from "react";
-import { Board } from "../../data/board";
-import { Columns } from "../../types";
-import { onDragEnd } from "../../helpers/onDragEnd";
-import { AddOutline } from "react-ionicons";
-import AddModal from "../../components/Modals/AddModal";
-import Task from "../../components/Task";
-
 const Home = () => {
-	const [columns, setColumns] = useState<Columns>(Board);
-	const [modalOpen, setModalOpen] = useState(false);
-	const [selectedColumn, setSelectedColumn] = useState("");
 
-	const openModal = (columnId: any) => {
-		setSelectedColumn(columnId);
-		setModalOpen(true);
+	const initialCategoryData = {
+		categoryName: ''
 	};
 
-	const closeModal = () => {
-		setModalOpen(false);
+	const [categoryData, setCategoryData] = useState(initialCategoryData);
+
+	const navigate = useNavigate();
+
+	const [categories, setCategorias] = useState<Category[]>([]);
+	const [att, setAtt] = useState(0);
+	const [openModal, setOpenModal] = useState(false);
+
+	useEffect(() => {
+		fetchCategories();
+	}, [att]);
+
+	const fetchCategories = async () => {
+		try {
+			const data = await getCategories();
+			setCategorias(data.Data);
+		} catch (error) {
+			console.log(error);
+			alert('Erro ao buscar categorias');
+			// navigate('/login');
+
+		}
+	}
+
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+	) => {
+		const { name, value } = e.target;
+		setCategoryData({ ...categoryData, [name]: value });
 	};
 
-	const handleAddTask = (taskData: any) => {
-		const newBoard = { ...columns };
-		newBoard[selectedColumn].items.push(taskData);
-	};
+
+	const sendToFavs = (id: string) => {
+		navigate('/favoritos?categoria=' + id);
+	}
+
+	const handleSubmit = async () => {
+
+		try {
+			setCategoryData(initialCategoryData);
+			await createCategory(categoryData);
+			setAtt(att + 1);
+			setOpenModal(false);
+
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
 	return (
-		<>
-			<DragDropContext onDragEnd={(result: any) => onDragEnd(result, columns, setColumns)} >
-				<div className="w-full flex items-start justify-between px-5 pb-8 md:gap-0 gap-10">
-					{Object.entries(columns).map(([columnId, column]: any) => (
-						<div
-							className="w-full flex flex-col gap-0"
-							key={columnId}
-						>
-							<Droppable
-								droppableId={columnId}
-								direction="horizontal"
-								key={columnId}
-							>
-								{(provided: any) => (
-									<div
-										ref={provided.innerRef}
-										{...provided.droppableProps}
-										className="flex flex-row md:w-[500px] w-[250px] items-center py-5"
-									>
-										{column.items.map((task: any, index: any) => (
-											<Draggable
-												key={task.id.toString()}
-												draggableId={task.id.toString()}
-												index={index}
-											>
-												{(provided: any) => (
-													<>
-														<Task
-															provided={provided}
-															task={task}
-														/>
-													</>
-												)}
-											</Draggable>
-										))}
-										{provided.placeholder}
-									</div>
-								)}
-							</Droppable>
-							<div
-								onClick={() => openModal(columnId)}
-								className="flex cursor-pointer items-center justify-center gap-1 py-[10px] md:w-[90%] w-full opacity-90 bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px]"
-							>
-								<AddOutline color={"#555"} />
-								Adicionar Favorito
-							</div>
-						</div>
-					))}
+		<div className="p-8 ">
+			<div className="flex justify-between w-full mb-5 items-center">
+				<h1 className="mt-8 text-3xl font-bold " >Categorias</h1>
+				<div
+					onClick={() => setOpenModal(true)}
+					className="flex cursor-pointer items-center justify-center gap-1 h-10 py-[5px] md:w-[20%] w-full opacity-90 bg-white rounded-lg shadow-sm text-[#555] font-medium text-[15px]"
+				>
+					<AddOutline color={"#555"} />
+					Adicionar Categoria
 				</div>
-			</DragDropContext>
+			</div>
+			<div className="flex flex-row flex-wrap gap-2">
+				{
+					categories.map((categoria) => (
+						<div key={categoria.category_id} className="ag-courses_item" onClick={() => sendToFavs(categoria.category_id)}>
+							<a href="#" className="ag-courses-item_link">
+								<div className="ag-courses-item_bg"></div>
 
-			<AddModal
-				isOpen={modalOpen}
-				onClose={closeModal}
-				setOpen={setModalOpen}
-				handleAddTask={handleAddTask}
-			/>
-		</>
-	);
+								<div className="ag-courses-item_title">
+									{categoria.category_name}
+								</div>
+							</a>
+						</div>
+
+					))
+				}
+			</div>
+
+			{
+				openModal && (
+					<div
+						className={`w-screen h-screen place-items-center fixed top-0 left-0 ${openModal ? "grid" : "hidden"
+							}`}
+					>
+						<div
+							className="w-full h-full bg-black opacity-70 absolute left-0 top-0 z-20"
+							onClick={() => setOpenModal(false)}
+						></div>
+						<div className="md:w-[30vw] w-[90%] bg-white rounded-lg shadow-md z-50 flex flex-col items-center gap-3 px-5 py-6">
+							<h1 className="font-semibold text-2xl">Adicionar Categoria</h1>
+							<input
+								type="text"
+								name="categoryName"
+								value={categoryData.categoryName}
+								onChange={handleChange}
+								placeholder="Nome da Categoria"
+								className="w-full h-12 px-3 outline-none rounded-md bg-slate-100 border border-slate-300 text-sm font-medium"
+							/>
+							<button
+								className="w-full mt-3 rounded-md h-9 bg-green-400 text-blue-50 font-medium"
+								onClick={handleSubmit}
+							>
+								Adicionar
+							</button>
+						</div>
+					</div>
+				)
+			}
+		</div>
+
+	)
+
 };
 
 export default Home;
